@@ -1,12 +1,12 @@
 {
   "name": "card-game-app",
   "private": true,
-  "version": "1.4.1",
+  "version": "1.4.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:vercel": "vite build && cp -r public/* dist/",
+    "build:vercel": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "vercel-build": "npm run build:vercel"
