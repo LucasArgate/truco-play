@@ -66,77 +66,81 @@ const RankingPage = () => {
       activeRoute="ranking"
       onNavigate={navigate}
     >
-      <div className="p-4 space-y-4">
-        {/* Filtros */}
-        <div className="flex space-x-2 overflow-x-auto">
-          {filterOptions.map((option) => (
-            <Button
-              key={option.id}
-              variant={filter === option.id ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setFilter(option.id)}
-              className="whitespace-nowrap"
-            >
-              {option.label}
-            </Button>
-          ))}
-        </div>
-
-        {/* Sua posição */}
-        {user && (
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-            <Text variant="small" className="text-primary font-medium mb-2">
-              Sua Posição
-            </Text>
-            <div className="flex items-center justify-between">
-              <div>
-                <Text variant="body" className="font-semibold">
-                  #{Math.floor(Math.random() * 50) + 10}º lugar
-                </Text>
-                <Text variant="small" className="text-muted-foreground">
-                  {Math.floor(Math.random() * 1000) + 500} pontos
-                </Text>
-              </div>
-              <div className="text-right">
-                <Text variant="small" className="text-muted-foreground">
-                  Para subir uma posição
-                </Text>
-                <Text variant="small" className="font-medium">
-                  +{Math.floor(Math.random() * 100) + 50} pontos
-                </Text>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Lista de ranking */}
-        {loading ? (
-          <div className="space-y-3">
-            {[...Array(5)].map((_, index) => (
-              <div key={index} className="bg-muted animate-pulse rounded-lg h-20" />
+      {/* Container responsivo - centralizado apenas no desktop */}
+      <div className="p-4 md:p-0 md:flex md:justify-center md:items-start md:min-h-full">
+        {/* Conteúdo centralizado com largura máxima no desktop */}
+        <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl mx-auto space-y-4">
+          {/* Filtros */}
+          <div className="flex space-x-2 overflow-x-auto">
+            {filterOptions.map((option) => (
+              <Button
+                key={option.id}
+                variant={filter === option.id ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilter(option.id)}
+                className="whitespace-nowrap"
+              >
+                {option.label}
+              </Button>
             ))}
           </div>
-        ) : (
-          <RankingList 
-            rankings={rankings} 
-            currentUser={user}
-          />
-        )}
 
-        {/* Informações adicionais */}
-        <div className="bg-muted rounded-lg p-4 space-y-2">
-          <Text variant="small" className="font-medium">
-            Como funciona o ranking?
-          </Text>
-          <Text variant="caption" className="text-muted-foreground">
-            • Ganhe pontos vencendo partidas
-            <br />
-            • Perca pontos ao ser derrotado
-            <br />
-            • Sequências de vitórias dão bônus extra
-            <br />
-            • Ranking atualizado em tempo real
-          </Text>
+          {/* Sua posição */}
+          {user && (
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+              <Text variant="small" className="text-primary font-medium mb-2">
+                Sua Posição
+              </Text>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Text variant="body" className="font-semibold">
+                    #{Math.floor(Math.random() * 50) + 10}º lugar
+                  </Text>
+                  <Text variant="small" className="text-muted-foreground">
+                    {Math.floor(Math.random() * 1000) + 500} pontos
+                  </Text>
+                </div>
+                <div className="text-right">
+                  <Text variant="small" className="text-muted-foreground">
+                    Para subir uma posição
+                  </Text>
+                  <Text variant="small" className="font-medium">
+                    +{Math.floor(Math.random() * 100) + 50} pontos
+                  </Text>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Lista de ranking */}
+          {loading ? (
+            <div className="space-y-3">
+              {[...Array(5)].map((_, index) => (
+                <div key={index} className="bg-muted animate-pulse rounded-lg h-20" />
+              ))}
+            </div>
+          ) : (
+            <RankingList 
+              rankings={rankings} 
+              currentUser={user}
+            />
+          )}
+
+          {/* Informações adicionais */}
+          <div className="bg-muted rounded-lg p-4 space-y-2">
+            <Text variant="small" className="font-medium">
+              Como funciona o ranking?
+            </Text>
+            <Text variant="caption" className="text-muted-foreground">
+              • Ganhe pontos vencendo partidas
+              <br />
+              • Perca pontos ao ser derrotado
+              <br />
+              • Sequências de vitórias dão bônus extra
+              <br />
+              • Ranking atualizado em tempo real
+            </Text>
+          </div>
         </div>
       </div>
     </GameTemplate>
