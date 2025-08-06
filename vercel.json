@@ -1,26 +1,11 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:vercel",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
   "headers": [
     {
-      "source": "/manifest.json",
+      "source": "/(.*).html",
       "headers": [
         {
-          "key": "Content-Type",
-          "value": "application/manifest+json"
-        },
-        {
           "key": "Cache-Control",
-          "value": "public, max-age=3600"
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     },
@@ -28,75 +13,51 @@
       "source": "/sw.js",
       "headers": [
         {
-          "key": "Content-Type",
-          "value": "application/javascript"
-        },
-        {
           "key": "Cache-Control",
-          "value": "public, max-age=3600"
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     },
     {
-      "source": "/theme-init.js",
+      "source": "/manifest.webmanifest",
       "headers": [
         {
           "key": "Content-Type",
-          "value": "application/javascript"
+          "value": "application/manifest+json"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         },
         {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        }
-      ]
-    },
-    {
-      "source": "/install-prompt.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript"
+          "key": "X-Frame-Options",
+          "value": "DENY"
         },
         {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        }
-      ]
-    },
-    {
-      "source": "/favicon.svg",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31556952, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/react.svg",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31556952, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/src/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31556952, immutable"
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
         }
       ]
     }
   ],
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "nodejs18.x"
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  },
-  "env": {
-    "NODE_ENV": "production"
-  }
-} 
+  ]
+}
