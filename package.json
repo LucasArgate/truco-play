@@ -1,13 +1,15 @@
 {
   "name": "card-game-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:vercel": "vite build && cp -r public/* dist/",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "vercel-build": "npm run build:vercel"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
