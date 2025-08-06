@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 import GameTemplate from '../components/templates/GameTemplate';
 import GameTable from '../components/organisms/GameTable';
 import Button from '../components/atoms/Button';
 import Text from '../components/atoms/Text';
 import { Card, CardContent } from '../components/atoms/Card';
+import { activateInstallBanner } from '../utils/installUtils';
 
 const GamePage = () => {
   const [user, setUser] = useState(null);
@@ -132,6 +133,8 @@ const GamePage = () => {
   };
 
   const handleGameEnd = () => {
+    console.log('GamePage - handleGameEnd chamado');
+    
     // Atualizar fichas do usuário
     if (user && gameState.gameResult) {
       const newChips = gameState.gameResult === 'win' ? 
@@ -141,6 +144,10 @@ const GamePage = () => {
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
     }
+    
+    // Ativar banner de instalação após completar uma partida
+    console.log('GamePage - Ativando banner de instalação');
+    activateInstallBanner();
     
     navigate('/home');
   };

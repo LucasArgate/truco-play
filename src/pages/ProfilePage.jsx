@@ -5,6 +5,8 @@ import Button from '../components/atoms/Button';
 import Text from '../components/atoms/Text';
 import Icon from '../components/atoms/Icon';
 import Avatar from '../components/atoms/Avatar';
+import AvatarUpload from '../components/atoms/AvatarUpload';
+import UserStats from '../components/molecules/UserStats';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/atoms/Card';
 import { useDarkMode } from '../contexts/DarkModeContext';
 
@@ -38,6 +40,12 @@ const ProfilePage = () => {
     setIsEditing(false);
   };
 
+  const handleAvatarChange = (newAvatar) => {
+    const updatedUser = { ...user, avatar: newAvatar };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   const handleCancelEdit = () => {
     setEditForm({
       name: user?.name || '',
@@ -52,32 +60,7 @@ const ProfilePage = () => {
     navigate('/login');
   };
 
-  const stats = [
-    {
-      label: 'Partidas Jogadas',
-      value: user?.gamesPlayed || 0,
-      icon: 'play',
-      color: 'from-blue-500 to-blue-600'
-    },
-    {
-      label: 'Vitórias',
-      value: user?.wins || 0,
-      icon: 'trophy',
-      color: 'from-yellow-500 to-yellow-600'
-    },
-    {
-      label: 'Fichas Atuais',
-      value: user?.chips?.toLocaleString() || '0',
-      icon: 'creditCard',
-      color: 'from-green-500 to-green-600'
-    },
-    {
-      label: 'Ranking',
-      value: `#${user?.ranking || 'N/A'}`,
-      icon: 'star',
-      color: 'from-purple-500 to-purple-600'
-    }
-  ];
+
 
   if (!user) {
     return null; // Loading state
@@ -106,24 +89,22 @@ const ProfilePage = () => {
           <CardContent className="p-6">
             <div className="flex flex-col items-center space-y-4">
               {/* Avatar Grande */}
-              <div className="relative">
+              {isEditing ? (
+                <AvatarUpload
+                  currentAvatar={user.avatar}
+                  userName={user.name}
+                  onAvatarChange={handleAvatarChange}
+                  size="2xl"
+                />
+              ) : (
                 <Avatar
                   src={user.avatar}
                   alt={user.name}
                   size="2xl"
-                  fallback={user.name?.charAt(0)?.toUpperCase()}
+                  fallback={user.name}
                   className="ring-4 ring-primary/20"
                 />
-                {isEditing && (
-                  <Button
-                    size="icon"
-                    className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={() => {/* TODO: Implementar upload de avatar */}}
-                  >
-                    <Icon name="camera" size={16} />
-                  </Button>
-                )}
-              </div>
+              )}
 
               {/* Informações do Usuário */}
               <div className="text-center space-y-2">
@@ -193,25 +174,7 @@ const ProfilePage = () => {
         </Card>
 
         {/* Estatísticas */}
-        <div className="grid grid-cols-2 gap-4">
-          {stats.map((stat, index) => (
-            <Card key={index} className="bg-gradient-to-r from-muted to-muted/50 border-border">
-              <CardContent className="p-4">
-                <div className="text-center space-y-2">
-                  <div className={`w-12 h-12 mx-auto bg-gradient-to-r ${stat.color} rounded-full flex items-center justify-center`}>
-                    <Icon name={stat.icon} size={20} className="text-white" />
-                  </div>
-                  <Text variant="h3" className="font-bold text-foreground">
-                    {stat.value}
-                  </Text>
-                  <Text variant="small" className="text-muted-foreground">
-                    {stat.label}
-                  </Text>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <UserStats user={user} />
 
         {/* Histórico de Jogos */}
         <Card className="bg-gradient-to-r from-muted to-muted/50 border-border">

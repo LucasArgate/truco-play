@@ -1,7 +1,8 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import Header from '../molecules/Header';
 import Navbar from '../organisms/Navbar';
+import Footer from '../atoms/Footer';
 
 const GameTemplate = ({ 
   children, 
@@ -36,6 +37,9 @@ const GameTemplate = ({
       )}>
         {children}
       </main>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Bottom navigation */}
       {showNavbar && (

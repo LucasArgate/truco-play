@@ -5,10 +5,13 @@ import Button from '../components/atoms/Button';
 import Text from '../components/atoms/Text';
 import Icon from '../components/atoms/Icon';
 import Avatar from '../components/atoms/Avatar';
+import InstallBanner from '../components/molecules/InstallBanner';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/atoms/Card';
+import { isAppInstalled, hasUserDismissedInstall } from '../utils/installUtils';
 
 const HomePage = () => {
   const [user, setUser] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,10 +22,27 @@ const HomePage = () => {
     } else {
       navigate('/login');
     }
+
+    // Verificar se deve mostrar o banner de instalação
+    const shouldShowBanner = localStorage.getItem('showInstallBanner');
+    console.log('HomePage - shouldShowBanner:', shouldShowBanner);
+    console.log('HomePage - isAppInstalled:', isAppInstalled());
+    console.log('HomePage - hasUserDismissedInstall:', hasUserDismissedInstall());
+    
+    if (shouldShowBanner === 'true' && !isAppInstalled() && !hasUserDismissedInstall()) {
+      console.log('HomePage - Ativando banner de instalação');
+      setShowInstallBanner(true);
+      // Remove a flag para não mostrar novamente
+      localStorage.removeItem('showInstallBanner');
+    }
   }, [navigate]);
 
   const handleStartGame = () => {
     navigate('/betting');
+  };
+
+  const handleCloseInstallBanner = () => {
+    setShowInstallBanner(false);
   };
 
   const handleLogout = () => {
@@ -188,8 +208,27 @@ const HomePage = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Botão de teste para ativar banner */}
+          <Button
+            variant="outline"
+            onClick={() => {
+              console.log('HomePage - Botão de teste clicado');
+              activateInstallBanner();
+              setShowInstallBanner(true);
+            }}
+            className="w-full justify-start bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-yellow-200"
+          >
+            <Icon name="download" size={20} className="mr-3" />
+            Testar Banner de Instalação
+          </Button>
         </div>
       </div>
+
+      {/* Banner de Instalação */}
+      {showInstallBanner && (
+        <InstallBanner onClose={handleCloseInstallBanner} />
+      )}
     </GameTemplate>
   );
 };
