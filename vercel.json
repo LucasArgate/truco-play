@@ -1,10 +1,44 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist",
-  "installCommand": "npm install",
   "framework": "vite",
   "rewrites": [
+    {
+      "source": "/manifest.json",
+      "destination": "/manifest.json"
+    },
+    {
+      "source": "/sw.js",
+      "destination": "/sw.js"
+    },
+    {
+      "source": "/theme-init.js",
+      "destination": "/theme-init.js"
+    },
+    {
+      "source": "/install-prompt.js",
+      "destination": "/install-prompt.js"
+    },
+    {
+      "source": "/browserconfig.xml",
+      "destination": "/browserconfig.xml"
+    },
+    {
+      "source": "/favicon.svg",
+      "destination": "/favicon.svg"
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/icon-192x192.png",
+      "destination": "/icon-192x192.png"
+    },
+    {
+      "source": "/icon-512x512.png",
+      "destination": "/icon-512x512.png"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
@@ -33,7 +67,7 @@
         },
         {
           "key": "Cache-Control",
-          "value": "public, max-age=3600"
+          "value": "no-cache, no-store, must-revalidate"
         }
       ]
     },
@@ -64,39 +98,35 @@
       ]
     },
     {
-      "source": "/favicon.svg",
+      "source": "/browserconfig.xml",
       "headers": [
         {
+          "key": "Content-Type",
+          "value": "application/xml"
+        },
+        {
           "key": "Cache-Control",
-          "value": "public, max-age=31556952, immutable"
+          "value": "public, max-age=3600"
         }
       ]
     },
     {
-      "source": "/react.svg",
+      "source": "/icon-192x192.png",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=31556952, immutable"
+          "value": "public, max-age=86400"
         }
       ]
     },
     {
-      "source": "/src/assets/(.*)",
+      "source": "/icon-512x512.png",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=31556952, immutable"
+          "value": "public, max-age=86400"
         }
       ]
     }
-  ],
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 } 

@@ -4,110 +4,52 @@ import Text from '../atoms/Text';
 import Icon from '../atoms/Icon';
 import { Card, CardContent } from '../atoms/Card';
 import Notification from '../atoms/Notification';
-import { isAppInstalled, hasUserDismissedInstall, markInstallDismissed } from '../../utils/installUtils';
+import { usePWA } from '../../hooks/use-pwa';
+import { hasUserDismissedInstall, markInstallDismissed } from '../../utils/installUtils';
 import { APP_CONFIG } from '../../config/app';
 
 const InstallBanner = ({ onClose }) => {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isInstalling, setIsInstalling] = useState(false);
-  const [forceShow, setForceShow] = useState(false); // Para teste
+  const { canInstall, isInstalling, installApp } = usePWA();
   const [showNotification, setShowNotification] = useState(false);
+  const [forceShow, setForceShow] = useState(false);
 
   useEffect(() => {
     console.log('InstallBanner - useEffect iniciado');
+    console.log('InstallBanner - canInstall:', canInstall);
+    console.log('InstallBanner - hasUserDismissedInstall:', hasUserDismissedInstall());
     
-    // Captura o evento beforeinstallprompt
-    const handleBeforeInstallPrompt = (e) => {
-      console.log('InstallBanner - beforeinstallprompt disparado');
-      e.preventDefault();
-      setDeferredPrompt(e);
-      console.log('InstallBanner - deferredPrompt definido');
-    };
-
-    // Verifica se o app já está instalado
-    const handleAppInstalled = () => {
-      console.log('InstallBanner - appinstalled disparado');
-      setDeferredPrompt(null);
-      if (onClose) onClose();
-    };
-
-    // Verifica se já existe um prompt salvo globalmente
-    const checkExistingPrompt = () => {
-      if (window.deferredPrompt) {
-        console.log('InstallBanner - Prompt global encontrado');
-        setDeferredPrompt(window.deferredPrompt);
-      }
-    };
-
-    // Listener para evento customizado de prompt disponível
-    const handleInstallPromptAvailable = (e) => {
-      console.log('InstallBanner - Evento installPromptAvailable recebido');
-      setDeferredPrompt(e.detail);
-    };
-
-    // Listener para evento customizado de app instalado
-    const handleAppInstalledEvent = () => {
-      console.log('InstallBanner - Evento appInstalled recebido');
-      setDeferredPrompt(null);
-      if (onClose) onClose();
-    };
-
-    // Adiciona listeners
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
-    window.addEventListener('installPromptAvailable', handleInstallPromptAvailable);
-    window.addEventListener('appInstalled', handleAppInstalledEvent);
-    
-    // Verifica prompt existente
-    checkExistingPrompt();
-
     // Para teste: forçar exibição após 3 segundos se não há prompt
     const timer = setTimeout(() => {
-      console.log('InstallBanner - Timer expirado, deferredPrompt:', !!deferredPrompt);
-      if (!deferredPrompt) {
+      console.log('InstallBanner - Timer expirado, canInstall:', canInstall);
+      if (!canInstall) {
         console.log('InstallBanner - Forçando exibição para teste');
         setForceShow(true);
       }
     }, 3000);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
-      window.removeEventListener('installPromptAvailable', handleInstallPromptAvailable);
-      window.removeEventListener('appInstalled', handleAppInstalledEvent);
       clearTimeout(timer);
     };
-  }, [onClose]);
+  }, [canInstall]);
 
   const handleInstall = async () => {
     console.log('InstallBanner - handleInstall chamado');
-    console.log('InstallBanner - deferredPrompt:', !!deferredPrompt);
     
     // Se não há prompt real, simular instalação
-    if (!deferredPrompt) {
+    if (!canInstall) {
       console.log('InstallBanner - Simulando instalação (sem prompt real)');
       giveInstallBonus();
       if (onClose) onClose();
       return;
     }
 
-    setIsInstalling(true);
-    
     try {
-      console.log('InstallBanner - Chamando deferredPrompt.prompt()');
-      // Mostra o prompt de instalação
-      deferredPrompt.prompt();
+      const result = await installApp();
+      console.log('InstallBanner - Resultado da instalação:', result);
       
-      console.log('InstallBanner - Aguardando resposta do usuário...');
-      // Aguarda a resposta do usuário
-      const { outcome } = await deferredPrompt.userChoice;
-      
-      console.log('InstallBanner - Resposta do usuário:', outcome);
-      
-      if (outcome === 'accepted') {
+      if (result.success) {
         console.log('Usuário aceitou a instalação');
         giveInstallBonus();
-        setDeferredPrompt(null);
         if (onClose) onClose();
       } else {
         console.log('Usuário recusou a instalação');
@@ -118,8 +60,6 @@ const InstallBanner = ({ onClose }) => {
       console.error('Erro ao instalar:', error);
       // Em caso de erro, dar bônus mesmo assim
       giveInstallBonus();
-    } finally {
-      setIsInstalling(false);
     }
   };
 
@@ -149,12 +89,10 @@ const InstallBanner = ({ onClose }) => {
   };
 
   // Não mostra o banner se:
-  // 1. Não há prompt de instalação disponível
-  // 2. O app já está instalado
-  // 3. O usuário já recusou a instalação
-  // 4. A configuração não permite mostrar após jogo
-  console.log('InstallBanner - deferredPrompt:', !!deferredPrompt);
-  console.log('InstallBanner - isAppInstalled:', isAppInstalled());
+  // 1. Não pode instalar e não é modo teste
+  // 2. O usuário já recusou a instalação
+  // 3. A configuração não permite mostrar após jogo
+  console.log('InstallBanner - canInstall:', canInstall);
   console.log('InstallBanner - hasUserDismissedInstall:', hasUserDismissedInstall());
   console.log('InstallBanner - showAfterGame:', APP_CONFIG.install.showAfterGame);
   console.log('InstallBanner - forceShow:', forceShow);
@@ -162,14 +100,14 @@ const InstallBanner = ({ onClose }) => {
   // Para teste: mostrar se forceShow é true, mesmo sem outras condições
   if (forceShow) {
     console.log('InstallBanner - Mostrando banner (forçado para teste)');
-  } else if (!deferredPrompt || isAppInstalled() || hasUserDismissedInstall() || !APP_CONFIG.install.showAfterGame) {
+  } else if (!canInstall || hasUserDismissedInstall() || !APP_CONFIG.install.showAfterGame) {
     console.log('InstallBanner - Não mostrando banner');
     return null;
   } else {
     console.log('InstallBanner - Mostrando banner (condições normais)');
   }
 
-    return (
+  return (
     <>
       <Card className="fixed top-4 left-4 right-4 z-[9999] bg-gradient-to-br from-purple-600 via-primary to-blue-600 border-2 border-white/20 shadow-2xl animate-slide-up backdrop-blur-md">
         <CardContent className="p-6">
@@ -236,16 +174,16 @@ const InstallBanner = ({ onClose }) => {
         </CardContent>
       </Card>
 
-    {/* Notificação de Bônus */}
-    {showNotification && (
-      <Notification
-        message="🎉 Parabéns! Você ganhou 10 fichas por instalar o app!"
-        type="success"
-        duration={5000}
-        onClose={() => setShowNotification(false)}
-      />
-    )}
-  </>
+      {/* Notificação de Bônus */}
+      {showNotification && (
+        <Notification
+          message="🎉 Parabéns! Você ganhou 10 fichas por instalar o app!"
+          type="success"
+          duration={5000}
+          onClose={() => setShowNotification(false)}
+        />
+      )}
+    </>
   );
 };
 

@@ -1,7 +1,7 @@
 // Configurações do app
 export const APP_CONFIG = {
   name: 'Truco Play',
-  version: '1.4.0',
+  version: '1.4.6',
   description: 'Jogue truco e outros jogos de cartas online com seus amigos',
   author: 'Truco Play Team',
   website: 'https://truco-play.com',
