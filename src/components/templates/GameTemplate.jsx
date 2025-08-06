@@ -32,7 +32,7 @@ const GameTemplate = ({
       {/* Main content */}
       <main className={cn(
         'flex-1 overflow-auto',
-        showNavbar && 'pb-16' // Add padding for navbar
+        showNavbar && 'pb-20 md:pb-24' // Aumentado padding bottom para respeitar navbar
       )}>
         {children}
       </main>
