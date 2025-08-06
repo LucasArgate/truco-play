@@ -1,7 +1,7 @@
 {
   "name": "card-game-app",
   "private": true,
-  "version": "1.4.6",
+  "version": "1.4.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
