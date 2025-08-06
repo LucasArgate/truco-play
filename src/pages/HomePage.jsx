@@ -7,7 +7,7 @@ import Icon from '../components/atoms/Icon';
 import Avatar from '../components/atoms/Avatar';
 import InstallBanner from '../components/molecules/InstallBanner';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/atoms/Card';
-import { isAppInstalled, hasUserDismissedInstall } from '../utils/installUtils';
+import { isAppInstalled, hasUserDismissedInstall, activateInstallBanner } from '../utils/installUtils';
 
 const HomePage = () => {
   const [user, setUser] = useState(null);
@@ -35,6 +35,29 @@ const HomePage = () => {
       // Remove a flag para não mostrar novamente
       localStorage.removeItem('showInstallBanner');
     }
+
+    // Verificar se é PWA e mostrar banner se necessário
+    const checkPWAInstall = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.navigator.standalone === true;
+      
+      console.log('HomePage - Verificando PWA:', isStandalone);
+      console.log('HomePage - display-mode standalone:', window.matchMedia('(display-mode: standalone)').matches);
+      console.log('HomePage - navigator.standalone:', window.navigator.standalone);
+      
+      if (!isStandalone && !hasUserDismissedInstall()) {
+        console.log('HomePage - Não é PWA, pode mostrar banner');
+        // Ativar banner após 3 segundos se não for PWA
+        setTimeout(() => {
+          if (!isAppInstalled() && !hasUserDismissedInstall()) {
+            console.log('HomePage - Ativando banner por não ser PWA');
+            setShowInstallBanner(true);
+          }
+        }, 3000);
+      }
+    };
+
+    checkPWAInstall();
   }, [navigate]);
 
   const handleStartGame = () => {
@@ -209,19 +232,32 @@ const HomePage = () => {
             </CardContent>
           </Card>
 
-          {/* Botão de teste para ativar banner */}
-          <Button
-            variant="outline"
-            onClick={() => {
-              console.log('HomePage - Botão de teste clicado');
-              activateInstallBanner();
-              setShowInstallBanner(true);
-            }}
-            className="w-full justify-start bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-yellow-200"
-          >
-            <Icon name="download" size={20} className="mr-3" />
-            Testar Banner de Instalação
-          </Button>
+                            {/* Botão de teste para ativar banner */}
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      console.log('HomePage - Botão de teste clicado');
+                      activateInstallBanner();
+                      setShowInstallBanner(true);
+                    }}
+                    className="w-full justify-start bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-yellow-200"
+                  >
+                    <Icon name="download" size={20} className="mr-3" />
+                    Testar Banner de Instalação
+                  </Button>
+
+                  {/* Botão para forçar banner sempre */}
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      console.log('HomePage - Forçando banner sempre');
+                      setShowInstallBanner(true);
+                    }}
+                    className="w-full justify-start bg-green-100 border-green-300 text-green-800 hover:bg-green-200"
+                  >
+                    <Icon name="star" size={20} className="mr-3" />
+                    Forçar Banner Sempre
+                  </Button>
         </div>
       </div>
 
