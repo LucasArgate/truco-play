@@ -8,25 +8,30 @@ import QueuePage from './pages/QueuePage';
 import GamePage from './pages/GamePage';
 import PaymentPage from './pages/PaymentPage';
 import RankingPage from './pages/RankingPage';
+import ProfilePage from './pages/ProfilePage';
+import { DarkModeProvider } from './contexts/DarkModeContext';
 import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<SplashPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/betting" element={<BettingPage />} />
-          <Route path="/queue" element={<QueuePage />} />
-          <Route path="/game" element={<GamePage />} />
-          <Route path="/payment" element={<PaymentPage />} />
+    <DarkModeProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<SplashPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/betting" element={<BettingPage />} />
+            <Route path="/queue" element={<QueuePage />} />
+            <Route path="/game" element={<GamePage />} />
+                      <Route path="/payment" element={<PaymentPage />} />
           <Route path="/ranking" element={<RankingPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </Router>
+          </Routes>
+        </div>
+      </Router>
+    </DarkModeProvider>
   );
 }
 

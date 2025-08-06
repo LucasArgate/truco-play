@@ -1,0 +1,59 @@
+import { useState, useEffect } from 'react';
+
+export function useDarkMode() {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Verifica se há uma preferência salva no localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    
+    // Se não há preferência salva, detecta a preferência do sistema
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    // Aplica a classe 'dark' ao elemento html baseado no estado
+    const root = window.document.documentElement;
+    
+    if (isDarkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    
+    // Salva a preferência no localStorage
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    // Listener para mudanças na preferência do sistema
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = (e) => {
+      // Só muda automaticamente se não há uma preferência salva
+      const savedTheme = localStorage.getItem('theme');
+      if (!savedTheme) {
+        setIsDarkMode(e.matches);
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  const setDarkMode = (dark) => {
+    setIsDarkMode(dark);
+  };
+
+  return {
+    isDarkMode,
+    toggleDarkMode,
+    setDarkMode
+  };
+} 
