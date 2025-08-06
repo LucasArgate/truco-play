@@ -4,7 +4,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!manifest\\.json|sw\\.js|theme-init\\.js|install-prompt\\.js|favicon\\.svg|favicon\\.ico|react\\.svg|icon-.*\\.png).*)",
       "destination": "/index.html"
     }
   ],
@@ -20,6 +20,24 @@
     },
     {
       "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
+      "source": "/theme-init.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
+      "source": "/install-prompt.js",
       "headers": [
         {
           "key": "Content-Type",
